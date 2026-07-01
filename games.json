@@ -31,12 +31,20 @@
     "embed": "https://html5.gamemonetize.co/9zv52rjgu4h178mvf2ziukc3jkrcxyxk/",
     "source": "gamemonetize"
   },
-    {
+  {
     "id": "gm-76684",
     "title": "Geometry Dash Stars",
     "category": "Hypercasual",
     "thumb": "https://img.gamemonetize.com/h0yn15shfo0centrh5lpm45c2iun248s/512x384.jpg",
     "embed": "https://html5.gamemonetize.co/h0yn15shfo0centrh5lpm45c2iun248s/",
+    "source": "gamemonetize"
+  },
+  {
+    "id": "gm-70495",
+    "title": "Bloons Battles",
+    "category": "Shooting",
+    "thumb": "https://img.gamemonetize.com/ydihbdfz3qxevtauhuefdttmlgmxxzvo/512x384.jpg",
+    "embed": "https://html5.gamemonetize.co/ydihbdfz3qxevtauhuefdttmlgmxxzvo/",
     "source": "gamemonetize"
   }
 ]
