@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Play — Unblocked Fun Games</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="marquee">
+  <div class="marquee__lights" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <h1>UNBLOCKED<span class="accent">FUN</span>GAMES</h1>
+</header>
+
+<div class="player-wrap">
+  <a class="back-link" href="index.html">&larr; Back to all games</a>
+  <h2 class="player-title" id="title">Loading…</h2>
+
+  <div class="player-frame-wrap">
+    <iframe
+      id="frame"
+      src=""
+      allow="autoplay; fullscreen; gamepad"
+      allowfullscreen
+      loading="lazy"
+      title="Game player">
+    </iframe>
+  </div>
+
+  <p class="player-meta" id="meta"></p>
+</div>
+
+<p class="footer-note">Games provided via licensed third-party feeds. All game titles and assets belong to their respective publishers.</p>
+
+<script>
+(async function () {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const titleEl = document.getElementById('title');
+  const metaEl = document.getElementById('meta');
+  const frame = document.getElementById('frame');
+
+  if (!id) {
+    titleEl.textContent = 'Game not found';
+    metaEl.textContent = 'No game id was given. Go back and pick a game from the list.';
+    return;
+  }
+
+  try {
+    const res = await fetch('games.json', { cache: 'no-store' });
+    const games = await res.json();
+    const game = games.find(g => g.id === id);
+
+    if (!game) {
+      titleEl.textContent = 'Game not found';
+      metaEl.textContent = 'That game could not be located. Go back and pick another.';
+      return;
+    }
+
+    titleEl.textContent = game.title;
+    metaEl.textContent = game.category;
+    frame.src = game.embed;
+    document.title = game.title + ' — Unblocked Fun Games';
+  } catch (err) {
+    titleEl.textContent = 'Something went wrong';
+    metaEl.textContent = 'Could not load game data.';
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>

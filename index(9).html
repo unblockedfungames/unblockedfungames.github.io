@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unblocked Fun Games — Play Instantly, No Downloads</title>
+<meta name="description" content="Play free unblocked games right in your browser. No downloads, no sign-up, just click and play.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="marquee">
+  <div class="marquee__lights" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <h1>UNBLOCKED<span class="accent">FUN</span>GAMES</h1>
+  <p>Free browser games. No downloads. No waiting.</p>
+</header>
+
+<div class="controls">
+  <input class="search" id="search" type="text" placeholder="Search games…" aria-label="Search games">
+  <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>
+    <strong>No games found</strong>
+    Try a different search or category.
+  </div>
+</main>
+
+<p class="footer-note">Games provided via licensed third-party feeds. All game titles and assets belong to their respective publishers.</p>
+
+<script src="app.js"></script>
+</body>
+</html>
