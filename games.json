@@ -1,58 +1,18 @@
 [
   {
-    "id": "demo-1",
-    "title": "Sample Game One",
-    "category": "Arcade",
-    "thumb": "https://placehold.co/300x300/1e0e33/f5f0ff?text=Game+1",
-    "embed": "https://html5.gamedistribution.com/REPLACE-WITH-REAL-ID/",
-    "source": "gamedistribution"
-  },
-  {
-    "id": "demo-2",
-    "title": "Sample Game Two",
-    "category": "Puzzle",
-    "thumb": "https://placehold.co/300x300/1e0e33/f5f0ff?text=Game+2",
-    "embed": "https://html5.gamedistribution.com/REPLACE-WITH-REAL-ID/",
-    "source": "gamedistribution"
-  },
-  {
-    "id": "demo-3",
-    "title": "Sample Game Three",
-    "category": "Racing",
-    "thumb": "https://placehold.co/300x300/1e0e33/f5f0ff?text=Game+3",
-    "embed": "https://gamemonetize.com/REPLACE-WITH-REAL-EMBED",
-    "source": "gamemonetize"
-  },
-  {
-    "id": "demo-4",
-    "title": "Sample Game Four",
-    "category": "Action",
-    "thumb": "https://placehold.co/300x300/1e0e33/f5f0ff?text=Game+4",
-    "embed": "https://gamemonetize.com/REPLACE-WITH-REAL-EMBED",
-    "source": "gamemonetize"
-  },
-  {
-    "id": "demo-5",
-    "title": "Sample Game Five",
-    "category": "Sports",
-    "thumb": "https://placehold.co/300x300/1e0e33/f5f0ff?text=Game+5",
-    "embed": "https://html5.gamedistribution.com/REPLACE-WITH-REAL-ID/",
-    "source": "gamedistribution"
-  },
-  {
-    "id": "demo-6",
-    "title": "Sample Game Six",
-    "category": "Puzzle",
-    "thumb": "https://placehold.co/300x300/1e0e33/f5f0ff?text=Game+6",
-    "embed": "https://gamemonetize.com/REPLACE-WITH-REAL-EMBED",
-    "source": "gamemonetize"
-  },
-  {
     "id": "gd-fireboy-watergirl-6",
     "title": "Fireboy and Watergirl 6: Fairy Tales",
     "category": "Puzzle",
     "thumb": "https://img.gamedistribution.com/56da8a54fe204845b34ccff750d4a60b-512x384.jpeg",
     "embed": "https://html5.gamedistribution.com/56da8a54fe204845b34ccff750d4a60b/?gd_sdk_referrer_url=https://unblockedfungames.github.io/game.html",
     "source": "gamedistribution"
+  },
+  {
+    "id": "gm-80758",
+    "title": "Head Football 3D",
+    "category": "Sports",
+    "thumb": "https://img.gamemonetize.com/xfl7v3wmq9sfr3smizfho6k4zn22h1qq/512x384.jpg",
+    "embed": "https://html5.gamemonetize.co/xfl7v3wmq9sfr3smizfho6k4zn22h1qq/",
+    "source": "gamemonetize"
   }
 ]
