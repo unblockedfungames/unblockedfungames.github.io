@@ -40,18 +40,19 @@ const CURATED_GAMES = [
 ];
 
 async function fetchGameMonetize() {
-  if (!GAMEMONETIZE_FEED_URL) return [];
   const res = await fetch(GAMEMONETIZE_FEED_URL);
-  if (!res.ok) throw new Error(`GameMonetize feed request failed: ${res.status}`);
+
+  if (!res.ok) {
+    throw new Error(`GameMonetize feed request failed: ${res.status}`);
+  }
+
   const data = await res.json();
-  return data.map(g => ({
-    id: `gm-${g.id}`,
-    title: g.title,
-    category: g.category || 'Arcade',
-    thumb: g.thumb,
-    embed: g.url,
-    source: 'gamemonetize'
-  }));
+
+  console.log("Feed type:", typeof data);
+  console.log("Feed keys:", Object.keys(data));
+  console.log(JSON.stringify(data, null, 2).slice(0, 2000));
+
+  return [];
 }
 
 async function fetchGameDistribution() {
