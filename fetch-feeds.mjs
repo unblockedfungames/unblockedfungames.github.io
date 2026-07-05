@@ -41,29 +41,39 @@ const CURATED_GAMES = [
   { id: 'gm-53523', title: 'Roblox World', category: 'Action', thumb: 'https://img.gamemonetize.com/gbzu2z08rrcwyag4kgnhp2dr0wumvubu/512x384.jpg', embed: 'https://html5.gamemonetize.co/gbzu2z08rrcwyag4kgnhp2dr0wumvubu/', source: 'gamemonetize' }
 ];
 
-async function fetchGameMonetizePage(page) {
+async function fetchGameMonetizePage(page, retries = 3, baseDelay = 1000) {
   const url = `https://gamemonetize.com/feed.php?format=0&num=${GAMEMONETIZE_PAGE_SIZE}&page=${page}`;
-  const res = await fetch(url);
 
-  if (!res.ok) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const res = await fetch(url);
+
+    if (res.ok) {
+      const data = await res.json();
+
+      // The feed can come back either as a bare array, or as an object with
+      // the array nested under a key (e.g. { items: [...] } / { games: [...] }).
+      // Handle both so a feed-shape change doesn't silently zero out results.
+      const items = Array.isArray(data)
+        ? data
+        : data.items || data.games || data.data || [];
+
+      if (!Array.isArray(items)) {
+        console.warn(`GameMonetize feed page ${page} came back in an unexpected shape:`, Object.keys(data));
+        return [];
+      }
+
+      return items;
+    }
+
+    if (res.status === 429 && attempt < retries) {
+      const waitTime = baseDelay * Math.pow(2, attempt - 1);
+      console.log(`  Rate limited (429) on page ${page}. Retrying in ${waitTime}ms (attempt ${attempt}/${retries})`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      continue;
+    }
+
     throw new Error(`GameMonetize feed request failed (page ${page}): ${res.status}`);
   }
-
-  const data = await res.json();
-
-  // The feed can come back either as a bare array, or as an object with the
-  // array nested under a key (e.g. { items: [...] } / { games: [...] }).
-  // Handle both so a feed-shape change doesn't silently zero out the results.
-  const items = Array.isArray(data)
-    ? data
-    : data.items || data.games || data.data || [];
-
-  if (!Array.isArray(items)) {
-    console.warn(`GameMonetize feed page ${page} came back in an unexpected shape:`, Object.keys(data));
-    return [];
-  }
-
-  return items;
 }
 
 async function fetchGameMonetize() {
@@ -94,6 +104,9 @@ async function fetchGameMonetize() {
 
     // Feed returned fewer than a full page, so this was the last page.
     if (items.length < GAMEMONETIZE_PAGE_SIZE) break;
+
+    // Small pause between requests to avoid tripping the feed's rate limit.
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
   return all.map(g => ({
