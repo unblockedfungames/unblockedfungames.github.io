@@ -41,7 +41,7 @@ const CURATED_GAMES = [
   { id: 'gm-53523', title: 'Roblox World', category: 'Action', thumb: 'https://img.gamemonetize.com/gbzu2z08rrcwyag4kgnhp2dr0wumvubu/512x384.jpg', embed: 'https://html5.gamemonetize.co/gbzu2z08rrcwyag4kgnhp2dr0wumvubu/', source: 'gamemonetize' }
 ];
 
-async function fetchGameMonetizePage(page, retries = 3, baseDelay = 1000) {
+async function fetchGameMonetizePage(page, retries = 5, baseDelay = 2000) {
   const url = `https://gamemonetize.com/feed.php?format=0&num=${GAMEMONETIZE_PAGE_SIZE}&page=${page}`;
 
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -72,6 +72,13 @@ async function fetchGameMonetizePage(page, retries = 3, baseDelay = 1000) {
       continue;
     }
 
+    if (res.status === 429) {
+      // Exhausted retries. Don't crash the whole run over this -- just tell
+      // the caller to stop paginating and keep whatever pages we already got.
+      console.warn(`  Still rate limited on page ${page} after ${retries} attempts. Stopping pagination here; keeping games from earlier pages.`);
+      return null;
+    }
+
     throw new Error(`GameMonetize feed request failed (page ${page}): ${res.status}`);
   }
 }
@@ -82,6 +89,11 @@ async function fetchGameMonetize() {
 
   for (let page = 1; page <= GAMEMONETIZE_MAX_PAGES; page++) {
     const items = await fetchGameMonetizePage(page);
+
+    if (items === null) {
+      // Gave up on this page after retries -- keep what we have so far.
+      break;
+    }
 
     if (!items.length) {
       // No more games left in the feed.
@@ -105,8 +117,8 @@ async function fetchGameMonetize() {
     // Feed returned fewer than a full page, so this was the last page.
     if (items.length < GAMEMONETIZE_PAGE_SIZE) break;
 
-    // Small pause between requests to avoid tripping the feed's rate limit.
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Pause between requests to avoid tripping the feed's rate limit.
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
   return all.map(g => ({
