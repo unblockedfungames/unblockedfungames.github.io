@@ -48,11 +48,25 @@ async function fetchGameMonetize() {
 
   const data = await res.json();
 
-  console.log("Feed type:", typeof data);
-  console.log("Feed keys:", Object.keys(data));
-  console.log(JSON.stringify(data, null, 2).slice(0, 2000));
+  // The feed can come back either as a bare array, or as an object with the
+  // array nested under a key (e.g. { items: [...] } / { games: [...] }).
+  // Handle both so a feed-shape change doesn't silently zero out the results.
+  const items = Array.isArray(data)
+    ? data
+    : data.items || data.games || data.data || [];
 
-  return [];
+  if (!items.length) {
+    console.warn('GameMonetize feed returned no items. Raw response shape:', Object.keys(data));
+  }
+
+  return items.map(g => ({
+    id: `gm-${g.id}`,
+    title: g.title,
+    category: g.category || 'Arcade',
+    thumb: g.thumb,
+    embed: g.url,
+    source: 'gamemonetize'
+  }));
 }
 
 async function fetchGameDistribution() {
