@@ -13,9 +13,11 @@
 
 import fs from 'node:fs/promises';
 
-// format=0 returns JSON. num controls how many games per page (raise this,
-// e.g. num=200, to pull more from the feed). page lets you paginate further.
-const GAMEMONETIZE_FEED_URL = 'https://gamemonetize.com/feed.php?format=0&num=50&page=1';
+// format=0 returns JSON. num sets games per page (100 is the feed's max per
+// request); fetchGameMonetize() below pages through page=1,2,3... until the
+// feed stops returning new games, so this pulls everything available.
+const GAMEMONETIZE_PAGE_SIZE = 100;
+const GAMEMONETIZE_MAX_PAGES = 50; // safety cap: 50 * 100 = 5000 games max
 
 // Leave blank unless/until you have a working GameDistribution bulk feed URL.
 const GAMEDISTRIBUTION_FEED_URL = '';
@@ -39,11 +41,12 @@ const CURATED_GAMES = [
   { id: 'gm-53523', title: 'Roblox World', category: 'Action', thumb: 'https://img.gamemonetize.com/gbzu2z08rrcwyag4kgnhp2dr0wumvubu/512x384.jpg', embed: 'https://html5.gamemonetize.co/gbzu2z08rrcwyag4kgnhp2dr0wumvubu/', source: 'gamemonetize' }
 ];
 
-async function fetchGameMonetize() {
-  const res = await fetch(GAMEMONETIZE_FEED_URL);
+async function fetchGameMonetizePage(page) {
+  const url = `https://gamemonetize.com/feed.php?format=0&num=${GAMEMONETIZE_PAGE_SIZE}&page=${page}`;
+  const res = await fetch(url);
 
   if (!res.ok) {
-    throw new Error(`GameMonetize feed request failed: ${res.status}`);
+    throw new Error(`GameMonetize feed request failed (page ${page}): ${res.status}`);
   }
 
   const data = await res.json();
@@ -55,11 +58,45 @@ async function fetchGameMonetize() {
     ? data
     : data.items || data.games || data.data || [];
 
-  if (!items.length) {
-    console.warn('GameMonetize feed returned no items. Raw response shape:', Object.keys(data));
+  if (!Array.isArray(items)) {
+    console.warn(`GameMonetize feed page ${page} came back in an unexpected shape:`, Object.keys(data));
+    return [];
   }
 
-  return items.map(g => ({
+  return items;
+}
+
+async function fetchGameMonetize() {
+  const seen = new Set();
+  const all = [];
+
+  for (let page = 1; page <= GAMEMONETIZE_MAX_PAGES; page++) {
+    const items = await fetchGameMonetizePage(page);
+
+    if (!items.length) {
+      // No more games left in the feed.
+      break;
+    }
+
+    let newOnThisPage = 0;
+    for (const g of items) {
+      if (!g.id || seen.has(g.id)) continue;
+      seen.add(g.id);
+      newOnThisPage++;
+      all.push(g);
+    }
+
+    console.log(`  GameMonetize page ${page}: ${items.length} items (${newOnThisPage} new)`);
+
+    // If a page returns nothing we haven't already seen, the feed is
+    // wrapping around / exhausted -- stop paginating.
+    if (newOnThisPage === 0) break;
+
+    // Feed returned fewer than a full page, so this was the last page.
+    if (items.length < GAMEMONETIZE_PAGE_SIZE) break;
+  }
+
+  return all.map(g => ({
     id: `gm-${g.id}`,
     title: g.title,
     category: g.category || 'Arcade',
